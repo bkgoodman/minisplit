@@ -1,0 +1,51 @@
+menu "Minisplit Config"
+
+    config MINISPLIT_DEFAULT_NAME
+        string "Default Name"  
+				default "minisplit"
+				help 
+					If multiple devices, set names at runtime via command line
+    config MINISPLIT_TELNET
+        bool "Enable Telnet login (Insecure!)"
+			config MINISPLIT_TELNET_PASSWORD
+					string "Password for telnet"
+					depends on MINISPLIT_TELNET
+					help
+						This will be sent in the clear!
+    config MINISPLIT_OTA
+        bool "Enable OTA Updates"
+			config MINISPLIT_OTA_AUTO
+					bool "Enable Automatic OTA Updates"
+					depends on MINISPLIT_OTA
+			config MINISPLIT_OTA_URL
+					string "URL for OTA Firmware Image"
+					depends on MINISPLIT_OTA
+			config MINISPLIT_OTA_AUTO_INTERVAL
+					int "Automatic OTA Internval (Hours)"
+					depends on MINISPLIT_OTA_AUTO
+    config MINISPLIT_HTTP
+        bool "Enable HTTP Server (Insecure!)"
+    config MINISPLIT_MQTT
+        bool "Enable MQTT Connection"
+			config MINISPLIT_MQTT_TLS
+					bool "MQTT use TLS"
+					depends on MINISPLIT_MQTT
+			config MINISPLIT_MQTT_NAME
+					string "MQTT Server DNS name"
+					depends on MINISPLIT_MQTT
+			config MINISPLIT_MQTT_REPORT_PREFIX
+					string "MQTT Topic Report Prefix"
+					depends on MINISPLIT_MQTT
+			config MINISPLIT_MQTT_REQUEST_PREFIX
+					string "MQTT Topic Prefix for requests"
+					depends on MINISPLIT_MQTT
+		config MINISPLIT_WIFI_SSID1
+			string "First WiFi SSID"
+		config MINISPLIT_WIFI_PASSWORD1
+			string "First WiFi Password"
+		config MINISPLIT_WIFI_SSID2
+			string "Second WiFi SSID"
+		config MINISPLIT_WIFI_PASSWORD2
+			string "Second WiFi Password"
+
+endmenu
