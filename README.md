@@ -15,3 +15,10 @@ More docs to follow - but a few things to note are:
 
 # NOTE
 Values configured for Menuconfig section for "Minisplit config" does not actually do anything yet.
+
+
+# SETUP
+
+1. for OTA - go into `menuconfig` and under `Parition Table` make sure you set `Partition Table (Factory app, two OTA definitions)`
+2. In `menuconfig` under `serial flasher config` make sure flash is at least `4 MB` (or greater)
+3. Do a `otatool.py erase_otadata` and make sure that all works

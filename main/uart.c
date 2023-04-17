@@ -536,7 +536,7 @@ time(&now);
 return (now);
 }
 
-#define MINIBUF 24
+#define MINIBUF 8
 void uart_monitor_thread(void *parameters) {
   ESP_LOGI(TAG,"Monitor thread running");
   static const char *RX_TASK_TAG = "RX_TASK";
@@ -573,17 +573,17 @@ void uart_monitor_thread(void *parameters) {
       
 
       if (nextTime < now) {
-	 ESP_LOGW(TAG,"Transmiting Connect");
-	 bkg_uart_xmit((unsigned char *) txData,8);
-	 nextTime = now+120;
+			 ESP_LOGW(TAG,"Transmiting Connect");
+			 bkg_uart_xmit((unsigned char *) txData,8);
+			 nextTime = now+120;
       }
       const int rxBytes = uart_read_bytes(uart_num, data, MINIBUF, 2500 / portTICK_PERIOD_MS);
       if (rxBytes > 0) {
           data[rxBytes] = 0;
           ESP_LOGI(RX_TASK_TAG, "Read %d bytes: ", rxBytes);
 	  dumpmem(NOSOCKET,0,data,rxBytes);
+          ESP_LOGI(RX_TASK_TAG, "Processing packet (size=%d",packetsize);
 	  dumpmem(NOSOCKET,0,packet,packetsize);
-          ESP_LOGI(RX_TASK_TAG, "Processing packet");
           for (i=0;i<rxBytes;i++) {
             if (awaitSOF) {
               if ((data[i] & START_OF_PACKET) == START_OF_PACKET) {
@@ -620,6 +620,7 @@ void uart_monitor_thread(void *parameters) {
             }
           }
       } else {
+				ESP_LOGE(TAG,"NoData");
         // If we've gone 5 seconds with no data - assume we're getting a new transmission
 	if (awaitSOF != 1)
 		ESP_LOGE(TAG,"Clearing Packet");
