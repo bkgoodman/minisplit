@@ -27,6 +27,7 @@
 
 int actual_roomTemp = TEMP_NONE;
 unsigned char queried_power=POWER_NONE;
+unsigned char queried_fan=FAN_NONE;
 unsigned char queried_mode=MODE_NONE;
 unsigned char queried_temp=TEMP_NONE;
 unsigned char queried_raw_temp=0;
@@ -229,9 +230,9 @@ void createPacket(unsigned char *packet, int power, int mode, int fan, int temp)
   }
 
 
-  /*
   packet[11] = fan; // ???? depends on TmpMode??
   packet[6] += CONTROL_FAN;
+  /*
 
   packet[12] = vane; 
   packet[6] += CONTROL_VANE;
@@ -316,9 +317,9 @@ void should_set(void) {
 		change=true;
 	}
 
-	//if (queried_fan != FAN_AUTO) {
-	//	change=true;
-	//}
+	if (queried_fan != FAN_AUTO) {
+		change=true;
+	}
 
 	/* Temperate is based on many factors */
 
@@ -398,6 +399,7 @@ header[0] &= ~0x02;
 
 	  queried_power=power;
 	  queried_mode=mode;
+	  queried_fan=fan;
 	  f=0;
 
 	  // This is the one we won't use (???)
@@ -439,6 +441,8 @@ header[0] &= ~0x02;
 		  charMapLookup(FAN,FAN_MAP,fan,6));
 
 
+
+	  ESP_LOGI(TAG,"MANAGED MODE IS %d",managed.mode);
 		should_set();
 	  }
           break;
@@ -536,7 +540,7 @@ time(&now);
 return (now);
 }
 
-#define MINIBUF 8
+#define MINIBUF 24
 void uart_monitor_thread(void *parameters) {
   ESP_LOGI(TAG,"Monitor thread running");
   static const char *RX_TASK_TAG = "RX_TASK";
@@ -577,7 +581,7 @@ void uart_monitor_thread(void *parameters) {
 			 bkg_uart_xmit((unsigned char *) txData,8);
 			 nextTime = now+120;
       }
-      const int rxBytes = uart_read_bytes(uart_num, data, MINIBUF, 2500 / portTICK_PERIOD_MS);
+      const int rxBytes = uart_read_bytes(uart_num, data, MINIBUF, 5000 / portTICK_PERIOD_MS);
       if (rxBytes > 0) {
           data[rxBytes] = 0;
           ESP_LOGI(RX_TASK_TAG, "Read %d bytes: ", rxBytes);

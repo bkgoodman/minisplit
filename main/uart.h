@@ -38,7 +38,7 @@ void dumpmem(void *context,unsigned int addr, unsigned char *data,int size);
 #define MANAGED_UNMANAGED 0
 #define MANAGED_HEAT 1
 #define MANAGED_COOL 2
-#define MANAGED_OFF 2
+#define MANAGED_OFF 3
 
 
 typedef struct managed_setings_s {
