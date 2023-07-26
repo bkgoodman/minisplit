@@ -21,4 +21,7 @@ Values configured for Menuconfig section for "Minisplit config" does not actuall
 
 1. for OTA - go into `menuconfig` and under `Parition Table` make sure you set `Partition Table (Factory app, two OTA definitions)`
 2. In `menuconfig` under `serial flasher config` make sure flash is at least `4 MB` (or greater)
-3. Do a `otatool.py erase_otadata` and make sure that all works
+3. DO a `idf.py -p /dev/ttyUSB0 partition-table-flash`
+4. Do a `otatool.py erase_otadata` and make sure that all works
+5. Flash bootloader
+6. Flash app
