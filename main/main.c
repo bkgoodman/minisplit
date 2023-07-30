@@ -26,12 +26,11 @@
 #define GPIO_INPUT_BUTTON    15
 #define GPIO_IO_TX2 17
 #define GPIO_IO_RX2 16
-#define GPIO_OUTPUT_NEOPIXEL 21
-#define GPIO_INPUT_IR    22
+#define GPIO_OUTPUT_NEOPIXEL 22
+#define GPIO_INPUT_IR    21
 
 
 #define ESP_INTR_FLAG_DEFAULT 0
-//#define	NR_LED		3
 #include "esp_log.h"
 #include "esp_console.h"
 
@@ -106,10 +105,11 @@ void init_leds() {
 	np_show(&px, NEOPIXEL_RMT_CHANNEL);
 
 
+	np_set_pixel_rgbw_level(&px, 0 , 0,16,0,0,255);
 	np_show(&px, NEOPIXEL_RMT_CHANNEL);
-	vTaskDelay(1000 / portTICK_PERIOD_MS);
+	vTaskDelay(250 / portTICK_PERIOD_MS);
 	
-	np_set_pixel_rgbw_level(&px, 0 , 0,0,0,0,255);
+	np_set_pixel_rgbw_level(&px, 0 , 0,16,16,0,255);
 	np_show(&px, NEOPIXEL_RMT_CHANNEL);
 }
 
@@ -255,6 +255,7 @@ app_main (void)
     }
     ESP_ERROR_CHECK( err );
 
+    ESP_LOGI(TAG,"LED Init");
   nvs_handle_t h;
   nvs_open(STORAGE_NAMESPACE,NVS_READONLY,&h);
   size_t size=19;
