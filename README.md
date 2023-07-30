@@ -17,11 +17,15 @@ More docs to follow - but a few things to note are:
 Values configured for Menuconfig section for "Minisplit config" does not actually do anything yet.
 
 
-# SETUP
+# CONFIGURATION
+
+This was create to build under ESP-IDF 4.4
 
 1. for OTA - go into `menuconfig` and under `Parition Table` make sure you set `Partition Table (Factory app, two OTA definitions)`
 2. In `menuconfig` under `serial flasher config` make sure flash is at least `4 MB` (or greater)
-3. DO a `idf.py -p /dev/ttyUSB0 partition-table-flash`
-4. Do a `otatool.py erase_otadata` and make sure that all works
-5. Flash bootloader
-6. Flash app
+
+# INSTALLATION
+
+ 1. `idf.py partition-table-flash`
+ 2. `otatool.py erase_otadata`
+ 3. `idf.py flash`
