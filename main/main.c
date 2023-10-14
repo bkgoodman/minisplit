@@ -105,11 +105,15 @@ void init_leds() {
 	np_show(&px, NEOPIXEL_RMT_CHANNEL);
 
 
-	np_set_pixel_rgbw_level(&px, 0 , 0,16,0,0,255);
+	np_set_pixel_rgbw_level(&px, 0 , 64,64,64,0,255);
 	np_show(&px, NEOPIXEL_RMT_CHANNEL);
 	vTaskDelay(250 / portTICK_PERIOD_MS);
 	
-	np_set_pixel_rgbw_level(&px, 0 , 0,16,16,0,255);
+	np_set_pixel_rgbw_level(&px, 0 , 128,128,0,0,255);
+	np_show(&px, NEOPIXEL_RMT_CHANNEL);
+	vTaskDelay(250 / portTICK_PERIOD_MS);
+
+	np_set_pixel_rgbw_level(&px, 0 , 0,0,0,0,255);
 	np_show(&px, NEOPIXEL_RMT_CHANNEL);
 }
 
@@ -277,6 +281,8 @@ app_main (void)
 	ESP_LOGI(TAG, "Running firmware version: %s", running_app_info.version);
                     }
   ESP_LOGI(TAG,"Hostname is \"%s\"",hostname);
+    gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
+    led_evt_queue = xQueueCreate(10, sizeof(short));
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -316,7 +322,7 @@ app_main (void)
     io_conf.intr_type = GPIO_PIN_INTR_NEGEDGE;
     io_conf.pin_bit_mask = 1<< GPIO_INPUT_IR;
     io_conf.mode = GPIO_MODE_INPUT;
-    io_conf.pull_up_en = 1;
+    io_conf.pull_up_en = 0;
     gpio_config(&io_conf);
     //gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
     gpio_isr_handler_add(GPIO_INPUT_IR, gpio_isr_handler, (void*) GPIO_INPUT_IR);
@@ -325,8 +331,6 @@ app_main (void)
     /* Start the server for the first time */
     server = start_webserver();
 
-    gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
-    led_evt_queue = xQueueCreate(10, sizeof(short));
 
 
   bkg_uart_init();

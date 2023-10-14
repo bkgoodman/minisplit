@@ -305,15 +305,18 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
+						printf("Entering deep sleep\n");
+						ESP_LOGI(TAG, "Entering deep sleep\n");
+// TODO BUG BOMB BKG FIXME
+#if 0
 						esp_wifi_disconnect();
 						printf("Wifi stop\n");
 						esp_wifi_stop();
-						printf("Entering deep sleep\n");
-						ESP_LOGI(TAG, "Entering deep sleep\n");
-						esp_deep_sleep(3000000LL);
+						esp_deep_sleep(1000LL);
 						//mqtt_restart();
 			
 						NETWORK_RESTART();
+#endif
             break;
 
         case MQTT_EVENT_SUBSCRIBED:
