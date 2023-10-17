@@ -655,6 +655,7 @@ void do_override() {
 	unsigned long now = getSecs();
 	if ((managed.override_time == 0) || (managed.mode == MANAGED_UNMANAGED)){
 		ESP_LOGI(TAG,"Override is disabled");
+    setLed(LED_FLAG_BUTTON);
 		return;
 	}
 
@@ -668,5 +669,7 @@ void do_override() {
 		setLed(LED_STATE_OVERRIDE_HEAT);
 	else if (managed.mode == MANAGED_COOL)
 		setLed(LED_STATE_OVERRIDE_COOL);
+  else
+    setLed(LED_FLAG_BUTTON);
 	ESP_LOGW(TAG,"Override active");
 }

@@ -125,13 +125,21 @@ void led_task() {
 
 	// These have to be done in priority order
 	//
+  uint32_t waitTime=30000;
   for(;;) {
-    uint32_t waitTime=30000;
 	  if (xQueueReceive(led_evt_queue, &led_evt, waitTime / portTICK_PERIOD_MS)) {
+    waitTime=30000;
 
 		ESP_LOGI(TAG,"Got LED Event 0x%x",led_evt);
 		// Change or Event Request
-	  if (led_evt & LED_FLAG_IR) {
+	  if (led_evt & LED_FLAG_BUTTON) {
+			np_set_pixel_rgbw_level(&px, 0 , 128,128,0,0,255);
+			np_show(&px, NEOPIXEL_RMT_CHANNEL);
+			
+			waitTime = 500;
+			continue;
+		}
+    else if (led_evt & LED_FLAG_IR) {
 			np_set_pixel_rgbw_level(&px, 0 , 128,128,128,0,255);
 			np_show(&px, NEOPIXEL_RMT_CHANNEL);
 			

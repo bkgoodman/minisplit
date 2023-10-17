@@ -88,6 +88,7 @@ extern unsigned char queried_operating;
 #define LED_STATE_MASK 0x0f
 
 #define LED_FLAG_MASK 0xf0
+#define LED_FLAG_BUTTON 0x20
 #define LED_FLAG_IR 0x40
 #define LED_FLAG_NEAREND 0x80
 
