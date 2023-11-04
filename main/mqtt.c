@@ -38,7 +38,7 @@ extern const uint8_t client_key_pem_start[] asm("_binary_client_key_start");
 extern const uint8_t client_key_pem_end[] asm("_binary_client_key_end");
 extern const uint8_t CA_cert_pem_start[] asm("_binary_CA_crt_start");
 extern const uint8_t CA_cert_pem_end[] asm("_binary_CA_crt_end");
-extern char hostname[20];
+extern char hostname[30];
 
 #define STRINGIFY(x) #x
 #define CAT3_STR(A,B,C) A B C
@@ -66,7 +66,7 @@ void mqtt_report(char *power, int setpoint, int roomtemp, char *mode, char *fan)
 	char ipaddr[20];
 	int rssid;
 	char *t=malloc(MAX_REPORT_SIZE+1);
-	char topic[30];
+	char topic[60];
 	char timestr[30];
 	char ovend[30];
 	char lastir[30];
@@ -126,7 +126,7 @@ void mqtt_report(char *power, int setpoint, int roomtemp, char *mode, char *fan)
 	if (reportsize >= (MAX_REPORT_SIZE-20))
 		ESP_LOGE(TAG, "MQTT Report size is %d\n",reportsize);
 	ESP_LOGI(TAG, "Report: (%d) %s",reportsize,t);
-	snprintf(topic,50,"facility/minisplit/report/%s",hostname);
+	snprintf(topic,59,"facility/minisplit/report/%s",hostname);
 	esp_mqtt_client_publish(client_global, topic, t, 0, 0, RETAIN);
 	free(t);
 }
@@ -271,7 +271,7 @@ static void got_msg(char *topic, int len, char *data, int datalen) {
 static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 {
     esp_mqtt_client_handle_t client = event->client;
-	char topic[50];
+	char topic[60];
 
     // your_context_t *context = event->context;
 
@@ -283,7 +283,7 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 	switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-            snprintf(topic,49,"facility/minisplit/request/%s",hostname);
+            snprintf(topic,59,"facility/minisplit/request/%s",hostname);
             int msg_id = esp_mqtt_client_subscribe(client,topic, 0);
             ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 

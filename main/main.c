@@ -42,7 +42,7 @@
 
 time_t	override_end=0L;
 void wifi_init_sta(void);
-char hostname[20];
+char hostname[30];
 managed_settings_t managed;
 static const char *TAG = "Minisplit";
 

@@ -210,19 +210,22 @@ static int do_reboot_cmd(int argc, char **argv) {
 static int generic_hostname_cmd(void *context, int argc, char **argv) {
   esp_err_t	err;
   size_t size;
-  char hostname[20];
+  char hostname[30];
   nvs_handle_t h;
   nvs_open(STORAGE_NAMESPACE,NVS_READWRITE,&h);
   if (argc == 2) {
     	printf_console(context, "Setting Hostname to  \"%s\"\n",argv[1]);
-	nvs_set_str(h,"hostname",argv[1]);
+    err = nvs_set_str(h,"hostname",argv[1]);
+    if (err) {
+      printf_console(context, "Error setting hostname: %s\n",esp_err_to_name(err));
+    }
   }
-  size=19;
+  size=24;
   err = nvs_get_str(h,"hostname",hostname,&size);
   if (err) {
-	  printf_console(context, "No hostname set\n");
+	  printf_console(context, "Error getting hostname: %s\n",esp_err_to_name(err));
   } else {
-  	printf_console(context, "Hostname is  \"%s\"\n",hostname);
+  	printf_console(context, "Hostname is \"%s\"\n",hostname);
   }
   nvs_close(h);
   

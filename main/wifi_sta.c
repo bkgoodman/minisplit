@@ -70,7 +70,7 @@
 
 #define NUM_SSIDS 2
 
-extern char hostname[20];
+extern char hostname[30];
 wifi_config_t wifi_config[NUM_SSIDS] = {
     {
         .sta = {
