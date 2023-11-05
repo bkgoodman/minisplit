@@ -28,4 +28,6 @@ This was create to build under ESP-IDF 4.4
 
  1. `idf.py partition-table-flash`
  2. `otatool.py erase_otadata`
- 3. `idf.py flash`
+ 3. `idf.py bootloader-flash`
+ 4. `idf.py flash`
+ 4. `idf.py monitor` then at command prompt, do: `hostname minisplit-roomname`
