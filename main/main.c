@@ -22,12 +22,6 @@
 #include "esp_ota_ops.h"
 #include <esp_http_server.h>
 
-// 15 is a STRAPPING PIN and outputs PWM on boot. It can be a button if DISCONNECTED during boot
-#define GPIO_INPUT_BUTTON    15
-#define GPIO_IO_TX2 17
-#define GPIO_IO_RX2 16
-#define GPIO_OUTPUT_NEOPIXEL 22
-#define GPIO_INPUT_IR    21
 
 
 #define ESP_INTR_FLAG_DEFAULT 0
@@ -38,6 +32,7 @@
 #include "mqtt.h"
 #include "ota.h"
 #include "neopixel.h"
+#include "pins.h"
 
 
 time_t	override_end=0L;
@@ -49,11 +44,8 @@ static const char *TAG = "Minisplit";
 static xQueueHandle gpio_evt_queue = NULL;
 static xQueueHandle led_evt_queue = NULL;
 
-#define NR_LED (1)
 uint32_t		pixels[NR_LED];
 pixel_settings_t px;
-#define NEOPIXEL_RMT_CHANNEL (0)
-#define NEOPIXEL_WS2812
 
 void setLed(short led) {
     xQueueSend(led_evt_queue, &led, portMAX_DELAY );

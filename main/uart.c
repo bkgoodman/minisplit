@@ -3,7 +3,9 @@
 #include <string.h>
 #include <time.h>
 #include <esp_log.h>
+#include "driver/gpio.h"
 #include "mqtt.h"
+#include "pins.h"
 
 #define PACKET_SENT_INTERVAL_MS  1000
 #define PACKET_INFO_INTERVAL_MS  2000
@@ -622,6 +624,10 @@ void uart_monitor_thread(void *parameters) {
 
                 if (packetsize == (INFOHEADER_LEN + 1 + packet[4])) {
                   // We should have a complete packet
+                  
+                  gpio_set_level(GPIO_LED,0);
+                  vTaskDelay(250 / portTICK_PERIOD_MS);
+                  gpio_set_level(GPIO_LED,1);
                   
                   int ret = crunchPacket(packet,packetsize);
                   // Reset for next packet

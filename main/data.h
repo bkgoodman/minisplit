@@ -1,9 +1,6 @@
 #include <esp_http_server.h>
 /* Defines */
 
-#define RINGS 8
-#define MODE_AUTOADVANCE (10)
-#define SEQSIZE 100
 
 // Power Stage Change - do not report flags
 #define REPORTFLAG_NOMQTT 1
@@ -11,43 +8,8 @@
 #define REPORTFLAG_DESIRED 4
 #define STORAGE_NAMESPACE "PlasmaLamp"
 
-#define GPIO_LED GPIO_NUM_2
-#define GPIO_STARTGAME GPIO_NUM_23
-#define GPIO_ENDGAME GPIO_NUM_19
-
-/* Data Types */
-
-typedef struct ring_s {
-  unsigned short start;
-  unsigned short end;
-  unsigned short size;
-  double seq;
-  unsigned short pos;
-  unsigned short mode;
-  double speed;
-  unsigned short angle;
-  unsigned short width;
-  unsigned short len;
-	unsigned char red;
-	unsigned char green;
-	unsigned char blue;
-	unsigned long huespeed;
-	unsigned long hue;			// We use top byte only
-} ring_t;
-
-typedef struct preset_s {
-  ring_t rings[RINGS];
-  unsigned short sparkle;
-  unsigned short numflicker;
-  unsigned char flicker_r;
-  unsigned char flicker_g;
-  unsigned char flicker_b;
-} preset_t;
-
 /* GLobals */
 
-extern short ringsize[RINGS];
-extern ring_t  rings[RINGS];
 extern unsigned int globalDelay;
 /* Slot is the CURRENT things running.
  MODE is the desired SETTING. These often equate - but a 
@@ -55,15 +17,6 @@ extern unsigned int globalDelay;
 extern int mode ;
 extern bool powerState;
 extern volatile short workphase;
-extern unsigned short sparkle;
-extern unsigned char flicker_r;
-extern unsigned char flicker_g;
-extern unsigned char flicker_b;
-extern unsigned short numflicker;
-extern short preset_running;
-extern unsigned short fade_in;
-extern unsigned short fade_out;
-extern time_t next_time;
 
 /* Functions */
 
