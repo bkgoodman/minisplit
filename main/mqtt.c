@@ -86,6 +86,14 @@ void mqtt_report(char *power, int setpoint, int roomtemp, char *mode, char *fan)
 		asctime_r(&ov_tm,ovend);
 		ovend[strlen(ovend)-1]=(char) 0;
 	}
+
+	if (calendar_override_end != 0) {
+		struct tm ov_tm;
+		gmtime_r(&calendar_override_end,&ov_tm);
+		asctime_r(&ov_tm,ovend);
+		ovend[strlen(ovend)-1]=(char) 0;
+	}
+
 	lastir[0]=(char) 0;
 	if (last_ir != 0) {
 		struct tm ir_tm;
@@ -238,6 +246,12 @@ static void got_msg(char *topic, int len, char *data, int datalen) {
 			if (item) {
 			  do_override();
 			}
+			item = cJSON_GetObjectItem(root,"calendar_override");
+			if (item) {
+				do_calendar_override(item->valueint);
+				ESP_LOGI(TAG,"Calendar override %d seconds\n",item->valueint);
+			}
+
 			item = cJSON_GetObjectItem(root,"trip_ir");
 			if (item) {
 			  do_ir();
@@ -246,6 +260,7 @@ static void got_msg(char *topic, int len, char *data, int datalen) {
 			if (item) {
 			  ESP_LOGI(TAG,"Ending Override");
 			  override_end=0L;
+				setLed(LED_STATE_OFF);
 			}
 
 			if (writeManaged) {

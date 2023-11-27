@@ -34,6 +34,7 @@ unsigned char queried_raw_temp=0;
 unsigned char queried_operating=0;
 unsigned char alarm_state = ALARM_STATE_UNKNOWN;
 long last_ir =0L;
+long calendar_override_end =0L;
 long need_ir_by =0L;
 
 char *alarmStateString() {
@@ -565,6 +566,12 @@ void uart_monitor_thread(void *parameters) {
 				setLed(LED_STATE_OFF);
       }
 
+      if ((calendar_override_end != 0) && (calendar_override_end <= now)) {
+	      ESP_LOGW(TAG,"Calendar Override end");
+	      calendar_override_end = 0;
+				setLed(LED_STATE_OFF);
+      }
+
       // If we are in override mode, and requested IR verification, and it's been too long since
       // we got it - cancel the override
       
@@ -650,9 +657,25 @@ void do_ir() {
 	setLed(LED_FLAG_IR);
 }
 
+/* Override via Calendar API */
+void do_calendar_override(unsigned long secs) {
+	unsigned long now = getSecs();
+	if (managed.mode == MANAGED_UNMANAGED) {
+		ESP_LOGI(TAG,"Override is disabled");
+    setLed(LED_FLAG_BUTTON);
+		return;
+	}
+	need_ir_by = 0;
+}
 /* Someone pressed the "override" button (physically, or virtually) */
 void do_override() {
 	unsigned long now = getSecs();
+
+  if (calendar_override_end != 0) {
+		ESP_LOGI(TAG,"Calendar Override Active");
+    return;
+  }
+
 	if ((managed.override_time == 0) || (managed.mode == MANAGED_UNMANAGED)){
 		ESP_LOGI(TAG,"Override is disabled");
     setLed(LED_FLAG_BUTTON);

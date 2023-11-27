@@ -51,6 +51,7 @@ typedef struct managed_setings_s {
 } managed_settings_t;
 
 extern long	override_end;
+extern long	calendar_override_end;
 long last_ir;
 extern managed_settings_t managed;
 extern const byte POWER[2];
@@ -66,6 +67,7 @@ extern unsigned char alarm_state;
 char *alarmStateString();
 
 void do_override(void);
+void do_calendar_override(unsigned long secs);
 void do_ir(void);
 
 void createPacket(unsigned char *packet, int power, int mode, int fan,int temp);
