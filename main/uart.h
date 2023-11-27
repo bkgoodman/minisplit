@@ -59,6 +59,9 @@ extern const char *POWER_MAP[2];
 extern const byte MODE[5];
 extern const char *MODE_MAP[5];
 
+#define LAST_REPORT_SIZE (120)
+extern char last_report[LAST_REPORT_SIZE];
+
 void should_set(void);
 #define ALARM_STATE_UNKNOWN 0
 #define ALARM_STATE_ARMED 1

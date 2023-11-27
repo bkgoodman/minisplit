@@ -375,25 +375,79 @@ static int do_set_cmd(int argc, char **argv) {
 }
 
 static int generic_dump_cmd(void *context, int argc, char **argv) {
+	char ipaddr[20];
+	int rssid;
+	char timestr[30];
+	char ovend[30];
+	char lastir[30];
+	char modestr[10];
+	getNetworkInfo(ipaddr,&rssid);
+	    esp_app_desc_t running_app_info;
+	    const esp_partition_t *running = esp_ota_get_running_partition();
+	    char *fwversion=0L;
+	    if (esp_ota_get_partition_description(running, &running_app_info) == ESP_OK) {
+		fwversion =  running_app_info.version;
+	    }
+
+	ovend[0]=(char) 0;
+	if (override_end != 0) {
+		struct tm ov_tm;
+		gmtime_r(&override_end,&ov_tm);
+		asctime_r(&ov_tm,ovend);
+		ovend[strlen(ovend)-1]=(char) 0;
+	}
+
+	if (calendar_override_end != 0) {
+		struct tm ov_tm;
+		gmtime_r(&calendar_override_end,&ov_tm);
+		asctime_r(&ov_tm,ovend);
+		ovend[strlen(ovend)-1]=(char) 0;
+	}
+
+	lastir[0]=(char) 0;
+	if (last_ir != 0) {
+		struct tm ir_tm;
+		gmtime_r(&last_ir,&ir_tm);
+		asctime_r(&ir_tm,lastir);
+		lastir[strlen(lastir)-1]=(char) 0;
+	}
+
+	time_t tm = time(0L);
+	asctime_r(gmtime(&tm),timestr);
+	timestr[strlen(timestr)-1]=(char) 0;
+	strcpy(modestr,"OFF");
+	if (managed.mode == MANAGED_HEAT) strcpy(modestr,"HEAT");
+	if (managed.mode == MANAGED_COOL) strcpy(modestr,"COOL");
   /*
-  int i;
-  ring_t *rng;
-
-  printf_console(context, "sparkle=%d;\n",sparkle);
-  printf_console(context, "globalDelay=%d;\n",globalDelay);
-  printf_console(context, "flicker_r=%d;\n",flicker_r);
-  printf_console(context, "flicker_g=%d;\n",flicker_g);
-  printf_console(context, "flicker_b=%d;\n",flicker_b);
-  printf_console(context, "numflicker=%d;\n",numflicker);
-
-  for (i=0;i < RINGS;i++)
-  {
-    rng = &rings[i];
-    printf_console(context, " rng[%d]->speed=%f; rng[%d]->pos=%d; rng[%d]->mode=%d; rng[%d]->seq=%f;\n",i,rng->speed,i,rng->pos,i,rng->mode,i,rng->seq);
-    printf_console(context, " rng[%d]->red=%d; rng[%d]->green=%d; rng[%d]->blue=%d; rng[%d]->angle=%d;\n",i,rng->red,i,rng->green,i,rng->blue,i,rng->angle);
-    printf_console(context, " rng[%d]->width=%d; rng[%d]->len=%d; rng[%d]->huespeed=%lu\n",i,rng->width,i,rng->len,i,rng->huespeed);
-  } 
+  printf_console(context, "Power: %s setpoint: %d\n",
+			power,setpoint,
+  printf_console(context, "roomTemp: %d mode: %s fan:%s\n",
+      roomtemp,mode,fan,
   */
+
+  printf_console(context, "Last Report: %s\n",last_report);
+  printf_console(context, "ip: %s rssid: %d fw:%s time:%s\n",
+			ipaddr,rssid,fwversion ? fwversion : "??",timestr);
+
+  printf_console(context, "managed:%s managed_setpoint: %d override_setpoint: %d\n",
+			modestr,
+			managed.setpoint,
+			managed.override_setpoint);
+
+  printf_console(context, "override_time: %d override_end: %s\n",
+			managed.override_time,
+			ovend);
+
+  printf_console(context, "managed_setpoint_unoccupied: %d ir_interval:%d\n",
+			managed.setpoint_unoccupied,
+			managed.ir_interval);
+
+  printf_console(context, "operating: %s alarm:%s last_ir: %s\n",
+			queried_operating ? "ON":"OFF",
+			alarmStateString(),
+			lastir
+			);
+    
   return(0);
 }
 static int do_dump_cmd(int argc, char **argv) {

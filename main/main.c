@@ -256,6 +256,11 @@ static httpd_handle_t server = NULL;
 extern	void
 app_main (void)
 {
+  gpio_set_direction(GPIO_LED,GPIO_MODE_OUTPUT);
+  gpio_set_level(GPIO_LED,1);
+	vTaskDelay(250 / portTICK_PERIOD_MS);
+  gpio_set_level(GPIO_LED,0);
+
 	ota_preflight();
 
     esp_err_t err = nvs_flash_init();
@@ -313,7 +318,6 @@ app_main (void)
     ESP_ERROR_CHECK(esp_event_handler_register(ETH_EVENT, ETHERNET_EVENT_DISCONNECTED, &disconnect_handler, &server));
 #endif // CONFIG_EXAMPLE_CONNECT_ETHERNET
 
-    gpio_set_direction(GPIO_LED,GPIO_MODE_OUTPUT);
     gpio_set_level(GPIO_LED,1);
 
     // GPIO 0 is "Overide" button

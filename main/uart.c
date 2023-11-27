@@ -36,6 +36,7 @@ unsigned char alarm_state = ALARM_STATE_UNKNOWN;
 long last_ir =0L;
 long calendar_override_end =0L;
 long need_ir_by =0L;
+char last_report[LAST_REPORT_SIZE]={0};
 
 char *alarmStateString() {
 	switch (alarm_state) {
@@ -430,10 +431,13 @@ header[0] &= ~0x02;
 	  }
 	  
 
-	  ESP_LOGI(TAG,"Setting: Power %s %d - Mode %s %d - Temp %f - Temp2 %f - tempMode %s - Fan %d - Vane %d - WideVane 0x%x",
+
+	  snprintf(last_report,LAST_REPORT_SIZE-1,"Power %s %d - Mode %s %d - Temp %f - Temp2 %f - tempMode %s - Fan %d - Vane %d - WideVane 0x%x",
 		  charMapLookup(POWER,POWER_MAP,power,2),power,
 		  charMapLookup(MODE,MODE_MAP,mode,5),mode,
 		 f,f2,tempMode ? "true" : "false", fan,vane,widevane);
+
+	  ESP_LOGI(TAG,"%s",last_report);
 
 	mqtt_report(
 		  charMapLookup(POWER,POWER_MAP,power,2),
@@ -556,7 +560,8 @@ void uart_monitor_thread(void *parameters) {
   packets();
   // Send initial "Connect" packet
   unsigned char txData[] = {0xfc, 0x5a, 0x01, 0x30, 0x02, 0xca, 0x1, 0xa8};
-	 bkg_uart_xmit((unsigned char *) txData,8);
+
+	bkg_uart_xmit((unsigned char *) txData,8);
   while (1) {
       unsigned long now = getSecs();
 
@@ -665,8 +670,17 @@ void do_calendar_override(unsigned long secs) {
     setLed(LED_FLAG_BUTTON);
 		return;
 	}
+	override_end = now + (secs * 60);
 	need_ir_by = 0;
+	if (managed.mode == MANAGED_HEAT)
+		setLed(LED_STATE_OVERRIDE_HEAT);
+	else if (managed.mode == MANAGED_COOL)
+		setLed(LED_STATE_OVERRIDE_COOL);
+  else
+    setLed(LED_FLAG_BUTTON);
+	ESP_LOGW(TAG,"Calendar Override active");
 }
+
 /* Someone pressed the "override" button (physically, or virtually) */
 void do_override() {
 	unsigned long now = getSecs();
