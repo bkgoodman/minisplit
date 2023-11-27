@@ -12,6 +12,7 @@ More docs to follow - but a few things to note are:
 3. You can telnet to the ESP and do some basic commands - but this is insecure. You probably want to disable this
 4. Your device needs to be set up for OTA updates w/ 2MB partitions. Use OTA tool. You can ask for an automatic update, or it will try at startup and like every 15 hours thereafter. You probably want to change the address to the update server or it will grab my latest release.
 5. The project version number is in `CMakeLists.txt`. *Use the defined format*. Up-rev this to indiate somethine is NEWER than what's running. If you mess this up, you may find that when you build and install new firmware, it opts to use an OTA image instead. If confused, use ESP's otatool.py to erase the OTA data. (But beware - it will try to update!)
+6. After building - `build/heatpump.bin` should be copied to server `minisplit.fw` file for automatic updates
 
 # NOTE
 Values configured for Menuconfig section for "Minisplit config" does not actually do anything yet.
