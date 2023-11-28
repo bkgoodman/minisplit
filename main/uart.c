@@ -331,7 +331,7 @@ void should_set(void) {
 		want_temp = managed.setpoint_unoccupied;
 	} else {
 		/* If unknown or disaremd */
-		if (override_end != 0) {
+		if ((override_end != 0) || (calendar_override_end != 0)) {
 			// We are in override
 			want_temp = managed.override_setpoint;
 		} else {

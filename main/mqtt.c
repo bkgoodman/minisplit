@@ -194,7 +194,7 @@ static void got_msg(char *topic, int len, char *data, int datalen) {
 				if (!strcmp(item->valuestring,"3")) fan=FAN_3;
 				if (!strcmp(item->valuestring,"4")) fan=FAN_4;
 			}
-			item = cJSON_GetObjectItem(root,"temp");
+			item = cJSON_GetObjectItem(root,"setpoint");
 			if (item) {
 				ESP_LOGI(TAG,"Temp set request to %d",item->valueint);
 				temp = item->valueint;
@@ -274,8 +274,11 @@ static void got_msg(char *topic, int len, char *data, int datalen) {
 			if (item) {
 			  esp_restart();
 			}
-		createPacket(packet, power, mode, fan, temp);
-		bkg_uart_xmit(packet,PACKET_LEN);
+
+		if ((power!=POWER_NONE) && (mode!=MODE_NONE) && (fan!=FAN_NONE) && (temp!=TEMP_NONE) && (managed.mode == MANAGED_OFF)) {
+      createPacket(packet, power, mode, fan, temp);
+      bkg_uart_xmit(packet,PACKET_LEN);
+    }
 		if (root) cJSON_Delete(root); // Delete entire TREE
 	}
 
