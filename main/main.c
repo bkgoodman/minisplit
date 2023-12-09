@@ -48,7 +48,7 @@ uint32_t		pixels[NR_LED];
 pixel_settings_t px;
 
 void setLed(short led) {
-    xQueueSend(led_evt_queue, &led, portMAX_DELAY );
+    xQueueSend(led_evt_queue, &led, 1000 / portTICK_PERIOD_MS );
 }
 
 void set_pixels(uint16_t r, uint16_t g, uint16_t b, uint16_t l) {
@@ -117,10 +117,10 @@ void led_task() {
 
 	// These have to be done in priority order
 	//
-  uint32_t waitTime=30000;
+  uint32_t waitTime=5000;
   for(;;) {
 	  if (xQueueReceive(led_evt_queue, &led_evt, waitTime / portTICK_PERIOD_MS)) {
-    waitTime=30000;
+    waitTime=5000;
 
 		ESP_LOGI(TAG,"Got LED Event 0x%x",led_evt);
 		// Change or Event Request

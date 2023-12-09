@@ -10,13 +10,9 @@
 
 /* GLobals */
 
-extern unsigned int globalDelay;
 /* Slot is the CURRENT things running.
  MODE is the desired SETTING. These often equate - but a 
  MODE of 10 means we want to auto-advance SLOTs! */
-extern int mode ;
-extern bool powerState;
-extern volatile short workphase;
 
 /* Functions */
 

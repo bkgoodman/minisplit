@@ -427,7 +427,7 @@ void np_show(pixel_settings_t *px, rmt_channel_t channel)
 
 	// Wait for operation to finish
 	if (xSemaphoreTake(neopixel_sem, 0) == pdTRUE) {
-		xSemaphoreTake(neopixel_sem, portMAX_DELAY);
+		xSemaphoreTake(neopixel_sem, 1000 / portTICK_PERIOD_MS );
 	}
 	xSemaphoreGive(neopixel_sem);
 }
