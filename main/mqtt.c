@@ -106,6 +106,7 @@ void mqtt_report(char *power, int setpoint, int roomtemp, char *mode, char *fan)
 	asctime_r(gmtime(&tm),timestr);
 	timestr[strlen(timestr)-1]=(char) 0;
 	strcpy(modestr,"OFF");
+	if (managed.mode == MANAGED_UNMANAGED) strcpy(modestr,"UNMANAGED");
 	if (managed.mode == MANAGED_HEAT) strcpy(modestr,"HEAT");
 	if (managed.mode == MANAGED_COOL) strcpy(modestr,"COOL");
 	int reportsize = snprintf(t,MAX_REPORT_SIZE,"{\"power\":\"%s\",\"setpoint\":%d,\
