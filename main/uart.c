@@ -298,6 +298,7 @@ void bkg_uart_set_baud(int rate) {
 void should_set(void) {
 	bool change=false;
 	short setMode = MODE_NONE;
+	short setFan = FAN_AUTO;
 	short want_temp=0;
 	short setPower = POWER_NONE;
 	if (managed.mode == MANAGED_UNMANAGED)
@@ -306,12 +307,14 @@ void should_set(void) {
 	if ((managed.mode == MANAGED_HEAT)  && ((queried_mode != MODE_HEAT) || (queried_power != POWER_ON))) {
 		setMode = MODE_HEAT;
 		setPower = POWER_ON;
+    setFan = FAN_4;
 		ESP_LOGI(TAG,"Managed mode needs HEAT and ON");
 		change=true;
 	}
 	else if ((managed.mode == MANAGED_COOL)  && ((queried_mode != MODE_COOL) || (queried_power != POWER_ON))) {
 		setMode = MODE_COOL;
 		setPower = POWER_ON;
+    setFan = FAN_4;
 		ESP_LOGI(TAG,"Managed mode needs COOL and ON");
 		change=true;
 	}
@@ -321,9 +324,11 @@ void should_set(void) {
 		change=true;
 	}
 
+  /* TEMP REMOVE
 	if (queried_fan != FAN_AUTO) {
 		change=true;
 	}
+  */
 
 	/* Temperate is based on many factors */
 
@@ -351,7 +356,7 @@ void should_set(void) {
 	if (change) {
 		ESP_LOGI(TAG,"Applying managed settings");
 		unsigned char packet[PACKET_LEN];
-		createPacket(packet, setPower, setMode, FAN_AUTO, want_temp);
+		createPacket(packet, setPower, setMode, setFan, want_temp);
 		bkg_uart_xmit(packet,PACKET_LEN);
 	}
 
