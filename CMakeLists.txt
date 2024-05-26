@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.5)
 
 
 # PROJECT Version should be major.minor.patch - no more than 10 bits each!
-set(PROJECT_VER "0.0.10")
+set(PROJECT_VER "0.0.11")
 
 add_compile_definitions(SSID_PASSWORD="$ENV{SSID_PASSWORD}")
 add_compile_definitions(SSID="$ENV{SSID}")

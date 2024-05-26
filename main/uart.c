@@ -52,6 +52,20 @@ char *alarmStateString() {
 			return ("Invalid");
 	}
 }
+char *managedStateString() {
+	switch (managed.mode) {
+		case MANAGED_UNMANAGED:
+			return ("Unmanaged");
+		case MANAGED_COOL:
+			return ("Cool");
+		case MANAGED_HEAT:
+			return ("Heat");
+		case MANAGED_OFF:
+			return ("Off");
+		default:
+			return ("Invalid");
+	}
+}
 // https://github.com/SwiCago/HeatPump/blob/master/src/HeatPump.cpp
 //
 //
@@ -332,21 +346,27 @@ void should_set(void) {
 
 	/* Temperate is based on many factors */
 
-	if (alarm_state == ALARM_STATE_ARMED) {
-		want_temp = managed.setpoint_unoccupied;
-	} else {
-		/* If unknown or disaremd */
-		if ((override_end != 0) || (calendar_override_end != 0)) {
-			// We are in override
-			want_temp = managed.override_setpoint;
+	if ((managed.mode == MANAGED_HEAT) || (managed.mode == MANAGED_COOL)) { 
+		if (alarm_state == ALARM_STATE_ARMED) {
+			want_temp = managed.setpoint_unoccupied;
 		} else {
-			want_temp = managed.setpoint;
+			/* If unknown or disaremd */
+			if ((override_end != 0) || (calendar_override_end != 0)) {
+				// We are in override
+				want_temp = managed.override_setpoint;
+			} else {
+				want_temp = managed.setpoint;
+			}
 		}
+	} else if (managed.mode == MANAGED_UNMANAGED) {
+		// We dont remember unmanaged settings - We don't know what to set it to!?
+		want_temp = 72;
 	}
 
 	unsigned char want_raw = normalizedWantedTemp(want_temp);
 	if (queried_raw_temp != want_raw){
-		ESP_LOGI(TAG,"Managed mode Alarm %s override %s needs temp %d,not temp %d (raw is %d, wants %d)",
+		ESP_LOGI(TAG,"Managed mode %s - Alarm %s override %s needs temp %d,not temp %d (raw is %d, wants %d)",
+			managedStateString(),
 			alarmStateString(),
 			override_end != 0 ? "SET" : "off",
 			want_temp,queried_temp,queried_raw_temp,want_raw);
@@ -354,12 +374,11 @@ void should_set(void) {
 	} 
 
 	if (change) {
-		ESP_LOGI(TAG,"Applying managed settings");
+		ESP_LOGI(TAG,"should_set Applying settings - power %d mode %d fan %d temp %d", setPower,setMode,setFan,want_temp);
 		unsigned char packet[PACKET_LEN];
 		createPacket(packet, setPower, setMode, setFan, want_temp);
 		bkg_uart_xmit(packet,PACKET_LEN);
 	}
-
 }
 
 
@@ -455,7 +474,8 @@ header[0] &= ~0x02;
 
 
 	  ESP_LOGI(TAG,"MANAGED MODE IS %d",managed.mode);
-		should_set();
+		if (managed.mode != MANAGED_UNMANAGED)
+			should_set();
 	  }
           break;
       case 0x03: // Room Temp Reading

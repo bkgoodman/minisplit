@@ -236,9 +236,10 @@ static void got_msg(char *topic, int len, char *data, int datalen) {
 			item = cJSON_GetObjectItem(root,"ir_interval");
 			if (item) {
 				managed.ir_interval = item->valueint;
-				ESP_LOGI(TAG,"Managed ir_interval set to %d\n",managed.ir_interval);
+				ESP_LOGI(TAG,"Managed ir_interval set to %d (CHECK)\n",managed.ir_interval);
 				writeManaged = true;
 			}
+		  ESP_LOGI(TAG,"CheckWriteManaged 11\n");
 			item = cJSON_GetObjectItem(root,"fwupdate");
 			if (item) {
 			  ota_update(NOSOCKET);
@@ -253,6 +254,7 @@ static void got_msg(char *topic, int len, char *data, int datalen) {
 				ESP_LOGI(TAG,"Calendar override %d seconds\n",item->valueint);
 			}
 
+		  ESP_LOGI(TAG,"CheckWriteManaged 22\n");
 			item = cJSON_GetObjectItem(root,"trip_ir");
 			if (item) {
 			  do_ir();
@@ -264,22 +266,29 @@ static void got_msg(char *topic, int len, char *data, int datalen) {
 				setLed(LED_STATE_OFF);
 			}
 
+		  ESP_LOGI(TAG,"CheckWriteManaged\n");
 			if (writeManaged) {
 			  nvs_handle_t h;
 			  nvs_open(STORAGE_NAMESPACE,NVS_READWRITE,&h);
 			  ESP_ERROR_CHECK(nvs_set_blob(h,"managed",&managed,sizeof(managed)));
 			  nvs_close(h);
-			  should_set();
 			}
 			item = cJSON_GetObjectItem(root,"reboot");
 			if (item) {
 			  esp_restart();
 			}
 
-		if ((power!=POWER_NONE) && (mode!=MODE_NONE) && (fan!=FAN_NONE) && (temp!=TEMP_NONE) && (managed.mode == MANAGED_OFF)) {
+		  ESP_LOGI(TAG,"BigIf\n");
+		if ((power!=POWER_NONE) && (mode!=MODE_NONE) && (fan!=FAN_NONE) && (temp!=TEMP_NONE) && (managed.mode == MANAGED_UNMANAGED)) {
+		  ESP_LOGI(TAG,"MQTT Applying settings - power %d mode %d fan %d temp %d\n", power,mode,fan,temp);
       createPacket(packet, power, mode, fan, temp);
       bkg_uart_xmit(packet,PACKET_LEN);
-    }
+		} else if ((managed.mode == MANAGED_COOL) || (managed.mode == MANAGED_HEAT)) {
+				ESP_LOGI(TAG,"MQTT Applying settings - should_set\n");
+			  should_set();
+    } else {
+		  ESP_LOGI(TAG,"MQTT NOT Applying settings - mode %d power %d mode %d fan %d temp %d\n", managed.mode , power,mode,fan,temp);
+		}
 		if (root) cJSON_Delete(root); // Delete entire TREE
 	}
 

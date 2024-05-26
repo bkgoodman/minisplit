@@ -30,8 +30,8 @@ void dumpmem(void *context,unsigned int addr, unsigned char *data,int size);
 #define FAN_QUIET 1
 #define FAN_1 2
 #define FAN_2 3
-#define FAN_3 4
-#define FAN_4 5
+#define FAN_3 5
+#define FAN_4 6
 
 #define TEMP_NONE 0 // Our own "Do-Not-Update" flag
 
